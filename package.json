@@ -1,0 +1,67 @@
+{
+    "name": "root",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
+    "devDependencies": {
+        "@babel/core": "^7.17.5",
+        "@storybook/addon-actions": "^6.4.19",
+        "@storybook/addon-essentials": "^6.4.19",
+        "@storybook/addon-interactions": "^6.4.19",
+        "@storybook/addon-links": "^6.4.19",
+        "@storybook/react": "^6.4.19",
+        "@storybook/testing-library": "^0.0.9",
+        "@types/execa": "^2.0.0",
+        "@types/fs-extra": "^9.0.13",
+        "@types/globby": "^9.1.0",
+        "@types/react": "^17.0.39",
+        "@types/react-dom": "^17.0.13",
+        "@types/yargs-parser": "^21.0.0",
+        "babel-loader": "^8.2.3",
+        "chalk": "^5.0.0",
+        "husky": "^7.0.4",
+        "lerna": "^4.0.0",
+        "lint-staged": "^12.3.5",
+        "node-sass": "6.0.1",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "rollup": "^2.70.0",
+        "sass-loader": "10.2.0",
+        "ts-node": "^10.7.0",
+        "typescript": "^4.6.2"
+    },
+    "version": "1.0.0",
+    "main": "dist/bundle.cjs.js",
+    "module": "dist/bundle.ems.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build:changed": "ts-node rollup.build.ts --type changed",
+        "build:all": "ts-node rollup.build.ts --type all",
+        "release": "lerna publish --no-push --registry (私人npm地址)",
+        "updated": "lerna updated",
+        "storybook": "start-storybook -p 6006",
+        "build-storybook": "build-storybook"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "packages/**/*.scss": "stylelint --fix"
+    },
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "execa": "^6.1.0",
+        "fs-extra": "^10.0.1",
+        "globby": "^13.1.1",
+        "rollup-plugin-commonjs": "^10.1.0",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-scss": "^3.0.0",
+        "rollup-plugin-typescript2": "^0.31.2",
+        "yargs-parser": "^21.0.1"
+    }
+}
