@@ -27,64 +27,65 @@ export class Run {
      * @param external 排除不打包到dish里面的包
      */
     public async build(ohterPkgPaths: string[] = [], external: string[] = []) {
+
+        console.log(lernaJson)
+
         const pkgPaths: string[] = this.getPkgPaths(lernaJson.packages)
 
         // rollup配置列表
-        const rollupConfigList = [...pkgPaths, ...ohterPkgPaths].map<any>(
-            (pPath) => {
-                const pkg = fse.readJsonSync(pPath)
-                const libRoot = path.join(pPath, '..')
-                const isTsx = fse.existsSync(path.join(libRoot, 'src/index.tsx'))
-                return {
-                    input: path.join(libRoot, isTsx ? 'src/index.tsx' : 'src/index.ts'),
-                    plugins: [
-                        scss(), // 我们这里用scoped scss来写样式，所以打包使用scss预处理样式
-                        nodeResolve({
-                            extensions: ['.js', '.jsx', '.ts', '.tsx'],
-                        }),
-                        typescript({
-                            check: false,
-                            tsconfigOverride: {
-                                compilerOptions: {
-                                    baseUrl: libRoot,
-                                    outDir: path.join(libRoot, 'dist'),
-                                    allowSyntheticDefaultImports: true,
-                                },
-                                include: [path.join(libRoot, 'src')],
+        const rollupConfigList = [...pkgPaths, ...ohterPkgPaths].map<any>((pPath) => {
+            const pkg = fse.readJsonSync(pPath)
+            const libRoot = path.join(pPath, '..')
+            const isTsx = fse.existsSync(path.join(libRoot, 'src/index.tsx'))
+            return {
+                input: path.join(libRoot, isTsx ? 'src/index.tsx' : 'src/index.ts'),
+                plugins: [
+                    scss(), // 我们这里用scoped scss来写样式，所以打包使用scss预处理样式
+                    nodeResolve({
+                        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+                    }),
+                    typescript({
+                        check: false,
+                        tsconfigOverride: {
+                            compilerOptions: {
+                                baseUrl: libRoot,
+                                outDir: path.join(libRoot, 'dist'),
+                                allowSyntheticDefaultImports: true,
                             },
-                            typescript: ts,
-                            tsconfig: path.join(__dirname, 'tsconfig.json'),
-                        }),
-                        commonjs({
-                            include: path.join(__dirname, 'node_modules/**'),
-                        }),
-                    ],
-                    external: [
-                        ...Object.keys(pkg.dependencies || {}),
-                        ...(pkg.external || []),
-                        ...external,
-                    ],
-                    output: [
-                        {
-                            file: path.join(libRoot, pkg.main),
-                            format: 'cjs',
-                            exports: 'named',
-                            globals: {
-                                react: 'React',
-                            },
+                            include: [path.join(libRoot, 'src')],
                         },
-                        {
-                            file: path.join(libRoot, pkg.module),
-                            format: 'esm',
-                            exports: 'named',
-                            globals: {
-                                react: 'React',
-                            },
+                        typescript: ts,
+                        tsconfig: path.join(__dirname, 'tsconfig.json'),
+                    }),
+                    commonjs({
+                        include: path.join(__dirname, 'node_modules/**'),
+                    }),
+                ],
+                external: [
+                    ...Object.keys(pkg.dependencies || {}),
+                    ...(pkg.external || []),
+                    ...external,
+                ],
+                output: [
+                    {
+                        file: path.join(libRoot, pkg.main),
+                        format: 'cjs',
+                        exports: 'named',
+                        globals: {
+                            react: 'React',
                         },
-                    ],
-                } as IOpt
-            }
-        )
+                    },
+                    {
+                        file: path.join(libRoot, pkg.module),
+                        format: 'esm',
+                        exports: 'chalee',
+                        globals: {
+                            react: 'React',
+                        },
+                    },
+                ],
+            } as IOpt
+        })
 
         for (const opt of rollupConfigList) {
             console.log(chalk.hex('#009dff')('building: ') + opt.input)
